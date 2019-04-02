@@ -1,0 +1,17 @@
+name: dns
+version: 0.1.0
+author: Gohilla.com team
+homepage: https://github.com/gohilla/dns
+description: A package for working with the DNS protocol.
+
+executables:
+  dns-proxy: dns-proxy
+
+dependencies:
+  meta: ^1.1.7
+  ip: ^0.1.0
+  universal_io: ^0.1.0
+
+dev_dependencies:
+  pedantic: ^1.0.0
+  test: ^1.4.0
