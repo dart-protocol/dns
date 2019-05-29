@@ -19,10 +19,9 @@ import 'package:meta/meta.dart';
 
 import 'dns_client.dart';
 import 'dns_packet.dart';
-import 'http_dns_client_impl_vm.dart'
-    if (dart.library.html) 'http_dns_client_impl_browser/dns_packet_test.dart';
 import 'udp_dns_client.dart';
 import 'package:universal_io/io.dart';
+import 'dart:convert' as convert;
 
 /// DNS client that uses DNS-over-HTTPS protocol supported by Google and
 /// Cloudflare.
@@ -110,11 +109,27 @@ class HttpDnsClient extends PacketBasedDnsClient {
       url += "&edns_client_subnet=0.0.0.0/0";
     }
 
-    // Fetch.
-    // We have two implementations, one for browser and one for VM.
-    final json = await fetchJson(url);
+    // Fetch using 'universal_io' HttpClient
+    final request = await new HttpClient().getUrl(Uri.parse(url));
+    final response = await request.close();
+    if (response.statusCode!=200) {
+      throw new StateError("HTTP response was ${response.statusCode} (${response.reasonPhrase}). URL was: $url");
+    }
+    final contentType = response.headers.contentType;
+    switch(contentType.mimeType) {
+      case "application/json":
+        break;
+      case "application/x-javascript": // <-- Google's server returns this?
+        break;
+      default:
+        throw new StateError("HTTP response content type was $contentType'. URL was: $url");
+    }
 
-    // Decode
+    // Decode JSON
+    final data = await convert.utf8.decodeStream(response);
+    final json = convert.json.decode(data);
+
+    // Decode DNS packet from JSON
     return decodeDnsPacket(json);
   }
 

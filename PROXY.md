@@ -1,4 +1,4 @@
-# dart-dns proxy
+# Built-in proxy
 ## Install
 In the command line:
 ```

@@ -1,16 +1,21 @@
 name: dns
-version: 0.1.0
-author: Gohilla.com team
-homepage: https://github.com/gohilla/dns
+version: 0.1.1
+author: terrier989 <terrier989@gmail.com>
+homepage: https://github.com/gohilla/dart-dns
 description: A package for working with the DNS protocol.
+
+environment:
+  sdk: ">=2.0.0 <3.0.0"
 
 executables:
   dns-proxy: dns-proxy
 
 dependencies:
+  args: ^1.5.1
   meta: ^1.1.7
   ip: ^0.1.0
-  universal_io: ^0.1.0
+  raw: ^0.2.0
+  universal_io: ^0.1.1
 
 dev_dependencies:
   pedantic: ^1.0.0
