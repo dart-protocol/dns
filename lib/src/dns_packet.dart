@@ -193,7 +193,8 @@ class DnsResourceRecord extends SelfCodec {
 
   DnsResourceRecord();
 
-  DnsResourceRecord.withAnswer({@required String name, @required this.type, @required this.data}) {
+  DnsResourceRecord.withAnswer(
+      {@required String name, @required this.type, @required this.data}) {
     this.name = name;
     ttl = 600;
   }
@@ -268,10 +269,10 @@ class DnsPacket extends Packet {
 
   int _v0 = 0;
 
-  List<DnsQuestion> questions = const<DnsQuestion>[];
-  List<DnsResourceRecord> answers = const<DnsResourceRecord>[];
-  List<DnsResourceRecord> authorities = const<DnsResourceRecord>[];
-  List<DnsResourceRecord> additionalRecords = const<DnsResourceRecord>[];
+  List<DnsQuestion> questions = const <DnsQuestion>[];
+  List<DnsResourceRecord> answers = const <DnsResourceRecord>[];
+  List<DnsResourceRecord> authorities = const <DnsResourceRecord>[];
+  List<DnsResourceRecord> additionalRecords = const <DnsResourceRecord>[];
 
   DnsPacket() {
     op = opQuery;
@@ -281,11 +282,9 @@ class DnsPacket extends Packet {
   DnsPacket.withResponse({DnsPacket request}) {
     op = opQuery;
     isResponse = true;
-    if (request!=null) {
+    if (request != null) {
       this.questions = <DnsQuestion>[];
-      for (var question in request.questions) {
-
-      }
+      for (var question in request.questions) {}
     }
   }
 

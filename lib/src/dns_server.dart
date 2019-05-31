@@ -65,7 +65,7 @@ class DnsServer {
     // Handle packet
     final result = await client.handlePacket(packet);
 
-    if (result!=null) {
+    if (result != null) {
       // Send response back
       result.id = packet.id;
       socket.send(result.toImmutableBytes(), address, port);

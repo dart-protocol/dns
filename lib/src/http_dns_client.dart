@@ -87,7 +87,7 @@ class HttpDnsClient extends PacketBasedDnsClient {
       {InternetAddressType type = InternetAddressType.any}) async {
     //  Are we are resolving host of the DNS-over-HTTPS service?
     if (host == _urlHost) {
-      final selfClient = this.urlClient ?? new UdpDnsClient.google();
+      final selfClient = this.urlClient ?? UdpDnsClient.google();
       return selfClient.lookupPacket(host, type: type);
     }
 
@@ -96,7 +96,7 @@ class HttpDnsClient extends PacketBasedDnsClient {
 
     // Add: IPv4 or IPv6?
     if (type == null) {
-      throw new ArgumentError.notNull("type");
+      throw ArgumentError.notNull("type");
     } else if (type == InternetAddressType.any ||
         type == InternetAddressType.IPv4) {
       url += "&type=A";
@@ -110,19 +110,21 @@ class HttpDnsClient extends PacketBasedDnsClient {
     }
 
     // Fetch using 'universal_io' HttpClient
-    final request = await new HttpClient().getUrl(Uri.parse(url));
+    final request = await HttpClient().getUrl(Uri.parse(url));
     final response = await request.close();
-    if (response.statusCode!=200) {
-      throw new StateError("HTTP response was ${response.statusCode} (${response.reasonPhrase}). URL was: $url");
+    if (response.statusCode != 200) {
+      throw StateError(
+          "HTTP response was ${response.statusCode} (${response.reasonPhrase}). URL was: $url");
     }
     final contentType = response.headers.contentType;
-    switch(contentType.mimeType) {
+    switch (contentType.mimeType) {
       case "application/json":
         break;
       case "application/x-javascript": // <-- Google's server returns this?
         break;
       default:
-        throw new StateError("HTTP response content type was $contentType'. URL was: $url");
+        throw StateError(
+            "HTTP response content type was $contentType'. URL was: $url");
     }
 
     // Decode JSON

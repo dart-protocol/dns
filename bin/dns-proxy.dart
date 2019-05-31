@@ -79,7 +79,8 @@ class ServeCommand extends Command {
     }
 
     // Add logging
-    final filteringClient = FilteringDnsClient(client, beforeOperation: (DnsPacket packet) {
+    final filteringClient =
+        FilteringDnsClient(client, beforeOperation: (DnsPacket packet) {
       if (!isSilent) {
         for (var question in packet.questions) {
           final typeName = DnsQuestion.stringFromType(question.type);

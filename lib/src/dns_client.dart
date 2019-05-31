@@ -42,7 +42,8 @@ abstract class DnsClient {
       final type = ipAddress is Ip4Address
           ? DnsResourceRecord.typeIp4
           : DnsResourceRecord.typeIp6;
-      return DnsResourceRecord.withAnswer(name: name, type: type, data:ipAddress.toImmutableBytes());
+      return DnsResourceRecord.withAnswer(
+          name: name, type: type, data: ipAddress.toImmutableBytes());
     }).toList();
     return result;
   }

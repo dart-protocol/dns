@@ -24,7 +24,8 @@ void main() {
   test("DNS proxy executable", () async {
     // Start server
     const port = 4242;
-    proxy.main(["serve", "--silent", "--host=127.0.0.1", "--port=${port.toString()}"]);
+    proxy.main(
+        ["serve", "--silent", "--host=127.0.0.1", "--port=${port.toString()}"]);
 
     // Wait 100ms
     await Future.delayed(const Duration(milliseconds: 100));
