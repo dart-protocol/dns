@@ -112,19 +112,25 @@ class HttpDnsClient extends PacketBasedDnsClient {
     // Fetch using 'universal_io' HttpClient
     final request = await HttpClient().getUrl(Uri.parse(url));
     final response = await request.close();
-    if (response.statusCode != 200) {
-      throw StateError(
-          "HTTP response was ${response.statusCode} (${response.reasonPhrase}). URL was: $url");
-    }
-    final contentType = response.headers.contentType;
-    switch (contentType.mimeType) {
-      case "application/json":
-        break;
-      case "application/x-javascript": // <-- Google's server returns this?
-        break;
-      default:
+    try {
+      if (response.statusCode != 200) {
         throw StateError(
-            "HTTP response content type was $contentType'. URL was: $url");
+            "HTTP response was ${response.statusCode} (${response.reasonPhrase}). URL was: $url");
+      }
+      final contentType = response.headers.contentType;
+      switch (contentType.mimeType) {
+        case "application/json":
+          break;
+        case "application/x-javascript": // <-- Google's server returns this?
+          break;
+        default:
+          throw StateError(
+              "HTTP response content type was $contentType'. URL was: $url");
+      }
+    } catch (e) {
+      // ignore: unawaited_futures
+      response.listen((_){}).cancel();
+      rethrow;
     }
 
     // Decode JSON

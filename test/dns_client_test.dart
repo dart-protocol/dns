@@ -19,58 +19,42 @@ import 'package:universal_io/io.dart';
 void main() {
   group("DnsClient.system", () {
     test("lookupPacket('google.com')", () async {
-      try {
-        final client = SystemDnsClient();
-        final packet = await client.lookupPacket("google.com");
-        expect(packet, isNotNull);
-        expect(packet.isResponse, isTrue);
-        expect(packet.answers, hasLength(greaterThan(0)));
-        expect(packet.answers[0].name, "google.com");
-        expect(packet.answers[0].data, hasLength(greaterThan(1)));
-      } on UnsupportedError catch (e) {
-        // Running in browser
-      }
-    });
+      final client = SystemDnsClient();
+      final packet = await client.lookupPacket("google.com");
+      expect(packet, isNotNull);
+      expect(packet.isResponse, isTrue);
+      expect(packet.answers, hasLength(greaterThan(0)));
+      expect(packet.answers[0].name, "google.com");
+      expect(packet.answers[0].data, hasLength(greaterThan(1)));
+    }, testOn: "vm");
 
     test("lookup('google.com')", () async {
-      try {
-        final client = SystemDnsClient();
-        final response = await client.lookup("google.com");
-        expect(response, hasLength(greaterThan(0)));
-      } on UnsupportedError catch (e) {
-        // Running in browser
-      }
-    });
+      final client = SystemDnsClient();
+      final response = await client.lookup("google.com");
+      expect(response, hasLength(greaterThan(0)));
+    }, testOn: "vm");
   });
 
   group("UdpDnsClient", () {
     test("lookupPacket('google.com')", () async {
-      try {
-        final client = UdpDnsClient(
-          remoteAddress: InternetAddress("8.8.8.8"),
-        );
-        final packet = await client.lookupPacket("google.com");
-        expect(packet, isNotNull);
-        expect(packet.isResponse, isTrue);
-        expect(packet.answers, hasLength(greaterThan(0)));
-        expect(packet.answers[0].name, "google.com");
-        expect(packet.answers[0].data, hasLength(greaterThan(1)));
-      } on UnsupportedError catch (e) {
-        // Running in browser
-      }
-    });
+      final client = UdpDnsClient(
+        remoteAddress: InternetAddress("8.8.8.8"),
+      );
+      final packet = await client.lookupPacket("google.com");
+      expect(packet, isNotNull);
+      expect(packet.isResponse, isTrue);
+      expect(packet.answers, hasLength(greaterThan(0)));
+      expect(packet.answers[0].name, "google.com");
+      expect(packet.answers[0].data, hasLength(greaterThan(1)));
+    }, testOn: "vm");
 
     test("lookup('google.com')", () async {
-      try {
-        final client = UdpDnsClient(
-          remoteAddress: InternetAddress("8.8.8.8"),
-        );
-        final response = await client.lookup("google.com");
-        expect(response, hasLength(greaterThan(0)));
-      } on UnsupportedError catch (e) {
-        // Running in browser
-      }
-    });
+      final client = UdpDnsClient(
+        remoteAddress: InternetAddress("8.8.8.8"),
+      );
+      final response = await client.lookup("google.com");
+      expect(response, hasLength(greaterThan(0)));
+    }, testOn: "vm");
   });
 
   group("HttpDnsClient", () {

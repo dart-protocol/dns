@@ -284,7 +284,6 @@ class DnsPacket extends Packet {
     isResponse = true;
     if (request != null) {
       this.questions = <DnsQuestion>[];
-      for (var question in request.questions) {}
     }
   }
 

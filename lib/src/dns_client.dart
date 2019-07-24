@@ -68,7 +68,7 @@ abstract class DnsClient {
     final result = DnsPacket.withResponse();
     result.id = packet.id;
     result.answers = <DnsResourceRecord>[];
-    final List<Future<DnsResourceRecord>> futures = [];
+    final futures = <Future>[];
     for (var question in packet.questions) {
       var type = InternetAddressType.any;
       switch (question.type) {
