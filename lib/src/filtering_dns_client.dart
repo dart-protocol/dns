@@ -24,8 +24,8 @@ typedef Callback<T> = void Function(T argument);
 
 /// A DNS client that can log or modify questions and answers.
 class FilteringDnsClient extends DelegatingDnsClient {
-  final Callback<DnsPacket> beforeOperation;
-  final Callback<DnsPacket> afterOperation;
+  final Callback<DnsPacket>? beforeOperation;
+  final Callback<DnsPacket>? afterOperation;
 
   FilteringDnsClient(DnsClient client,
       {this.beforeOperation, this.afterOperation})
@@ -37,7 +37,7 @@ class FilteringDnsClient extends DelegatingDnsClient {
     if (beforeOperation != null) {
       final packet = DnsPacket();
       packet.questions.add(DnsQuestion(host: host));
-      beforeOperation(packet);
+      beforeOperation!(packet);
     }
     final result = await super.lookup(host);
     if (afterOperation != null) {
@@ -53,20 +53,16 @@ class FilteringDnsClient extends DelegatingDnsClient {
         answer.data = ip.toImmutableBytes();
         packet.answers.add(answer);
       }
-      afterOperation(packet);
+      afterOperation!(packet);
     }
     return result;
   }
 
   @override
-  Future<DnsPacket> handlePacket(DnsPacket packet, {Duration timeout}) async {
-    if (beforeOperation != null) {
-      beforeOperation(packet);
-    }
+  Future<DnsPacket?> handlePacket(DnsPacket packet, {Duration? timeout}) async {
+    beforeOperation?.call(packet);
     final result = await super.handlePacket(packet, timeout: timeout);
-    if (result != null && afterOperation != null) {
-      afterOperation(result);
-    }
+    if (result != null) afterOperation?.call(result);
     return result;
   }
 
@@ -76,12 +72,10 @@ class FilteringDnsClient extends DelegatingDnsClient {
     if (beforeOperation != null) {
       final packet = DnsPacket();
       packet.questions.add(DnsQuestion(host: host));
-      beforeOperation(packet);
+      beforeOperation!(packet);
     }
     final result = await super.lookupPacket(host, type: type);
-    if (afterOperation != null) {
-      afterOperation(result);
-    }
+    afterOperation?.call(result);
     return result;
   }
 }

@@ -19,7 +19,7 @@ import 'package:universal_io/io.dart';
 /// Provides access to Mac OS X network settings.
 class MacNetworkSettings {
   /// Returns DNS servers.
-  Future<List<InternetAddress>> getDnsServers() async {
+  Future<List<InternetAddress?>> getDnsServers() async {
     final result = await _networkSetup(["-getdnsservers", "Wi-Fi"]);
     if (result.contains("There aren't any")) {
       return [];

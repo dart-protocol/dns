@@ -14,12 +14,13 @@
 
 import 'package:ip/foundation.dart';
 import 'package:raw/raw.dart';
-import 'package:meta/meta.dart';
 
 const Protocol dns = Protocol("DNS");
 
-void _writeDnsName(RawWriter writer, List<String> parts, int startIndex,
-    Map<String, int> offsets) {
+void _writeDnsName(RawWriter writer, List<String> parts, int? startIndex,
+    Map<String, int>? offsets) {
+  assert(offsets == null || startIndex != null,
+      'If offsets are provided, so must a startIndex!');
   // Store pointer in the map
   if (offsets != null) {
     final key = parts.join(".");
@@ -28,7 +29,7 @@ void _writeDnsName(RawWriter writer, List<String> parts, int startIndex,
       writer.writeUint16(0xC000 | existingPointer);
       return;
     }
-    offsets[key] = writer.length - startIndex;
+    offsets[key] = writer.length - startIndex!;
   }
 
   for (var i = 0; i < parts.length; i++) {
@@ -53,7 +54,7 @@ void _writeDnsName(RawWriter writer, List<String> parts, int startIndex,
   writer.writeUint8(0);
 }
 
-List<String> _readDnsName(RawReader reader, int startIndex) {
+List<String> _readDnsName(RawReader reader, int? startIndex) {
   var name = <String>[];
   while (reader.availableLengthInBytes > 0) {
     // Read length
@@ -194,14 +195,14 @@ class DnsResourceRecord extends SelfCodec {
   DnsResourceRecord();
 
   DnsResourceRecord.withAnswer(
-      {@required String name, @required this.type, @required this.data}) {
+      {required String name, required this.type, required this.data}) {
     this.name = name;
     ttl = 600;
   }
 
   @override
   void encodeSelf(RawWriter writer,
-      {int startIndex, Map<String, int> pointers}) {
+      {int? startIndex, Map<String, int>? pointers}) {
     // Write name
     // (a list of labels/pointers)
     _writeDnsName(
@@ -228,7 +229,7 @@ class DnsResourceRecord extends SelfCodec {
   }
 
   @override
-  void decodeSelf(RawReader reader, {int startIndex}) {
+  void decodeSelf(RawReader reader, {int? startIndex}) {
     startIndex ??= 0;
     // Read name
     // (a list of labels/pointers)
@@ -279,7 +280,7 @@ class DnsPacket extends Packet {
     isRecursionDesired = true;
   }
 
-  DnsPacket.withResponse({DnsPacket request}) {
+  DnsPacket.withResponse({DnsPacket? request}) {
     op = opQuery;
     isResponse = true;
     if (request != null) {
@@ -528,7 +529,7 @@ class DnsQuestion extends SelfCodec {
   /// 16-bit class
   int classy = classInternetAddress;
 
-  DnsQuestion({String host}) {
+  DnsQuestion({String? host}) {
     if (host != null) {
       nameParts = host.split(".");
     }
@@ -536,7 +537,7 @@ class DnsQuestion extends SelfCodec {
 
   @override
   void encodeSelf(RawWriter writer,
-      {int startIndex, Map<String, int> pointers}) {
+      {int? startIndex, Map<String, int>? pointers}) {
     // Write name
     _writeDnsName(
       writer,
@@ -553,7 +554,7 @@ class DnsQuestion extends SelfCodec {
   }
 
   @override
-  void decodeSelf(RawReader reader, {int startIndex}) {
+  void decodeSelf(RawReader reader, {int? startIndex}) {
     // Name
     this.nameParts = _readDnsName(reader, startIndex);
 

@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:args/command_runner.dart';
 import 'package:dns/dns.dart';
 import 'package:dns/src/dns_settings.dart';
-import 'package:universal_io/io.dart';
-import 'dart:convert';
-import 'dart:async';
 import 'package:ip/ip.dart';
+import 'package:universal_io/io.dart';
 
 List<String> _mainArgs = [];
 
@@ -67,10 +68,10 @@ class ServeCommand extends Command {
 
   @override
   void run() async {
-    final host = InternetAddress(argResults["host"]);
-    final port = int.parse(argResults["port"]);
-    final dnsOverHttpsUrl = argResults["https"];
-    final isSilent = argResults["silent"];
+    final host = InternetAddress(argResults!["host"]);
+    final port = int.parse(argResults!["port"]);
+    final dnsOverHttpsUrl = argResults!["https"];
+    final isSilent = argResults!["silent"];
 
     // Define client
     var client = HttpDnsClient.google(maximalPrivacy: true);
@@ -106,7 +107,7 @@ class ServeCommand extends Command {
 
     // In OS X, we support changing system DNS server (temporarily)
     if (Platform.isMacOS) {
-      final isConfigureFlag = argResults["configure"] as bool;
+      final isConfigureFlag = argResults!["configure"] as bool;
       if (isConfigureFlag) {
         // Port must the default port
         if (!isSilent && port != DnsServer.defaultPort) {
@@ -140,7 +141,7 @@ class ServeCommand extends Command {
     await DnsServer.bind(filteringClient, address: host, port: port);
   }
 
-  void _startSudoProcess(InternetAddress address, int port) async {
+  Future<void> _startSudoProcess(InternetAddress address, int port) async {
     final executable = "sudo";
     final executableArgs = [Platform.executable]
       ..addAll(Platform.executableArguments)
@@ -181,7 +182,7 @@ Command 'sudo' usually asks your password.
   static void _configureMacOS(InternetAddress address) async {
     final client = MacNetworkSettings();
     final oldServers = await client.getDnsServers();
-    final oldServerString = oldServers.map((item) => item.address).join(', ');
+    final oldServerString = oldServers.map((item) => item!.address).join(', ');
     print("");
     print("Old DNS servers: [$oldServerString]");
     var isRestored = false;
@@ -191,7 +192,7 @@ Command 'sudo' usually asks your password.
         print("");
         print("Restoring old DNS servers: [$oldServerString]");
         print("");
-        await client.setDnsServers(oldServers);
+        await client.setDnsServers(oldServers.cast());
       }
       exit(0);
     };
