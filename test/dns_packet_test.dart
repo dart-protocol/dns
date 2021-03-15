@@ -33,8 +33,8 @@ void main() {
     });
 
     group("example #1", () {
-      List<int> exampleBytes;
-      DnsPacket example;
+      late List<int> exampleBytes;
+      late DnsPacket example;
 
       setUp(() {
         exampleBytes = const DebugHexDecoder().convert("""

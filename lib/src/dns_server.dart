@@ -35,7 +35,7 @@ class DnsServer {
   }
 
   static Future<DnsServer> bind(DnsClient client,
-      {InternetAddress address, int port = defaultPort}) async {
+      {InternetAddress? address, int port = defaultPort}) async {
     address ??= InternetAddress.loopbackIPv4;
     final socket = await RawDatagramSocket.bind(address, port);
     final server = DnsServer(socket, client);

@@ -17,7 +17,6 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:ip/ip.dart';
-import 'package:meta/meta.dart';
 import 'package:raw/raw.dart';
 import 'package:universal_io/io.dart';
 
@@ -29,16 +28,16 @@ class UdpDnsClient extends PacketBasedDnsClient {
   static final _portRandom = Random.secure();
   final InternetAddress remoteAddress;
   final int remotePort;
-  final InternetAddress localAddress;
-  final int localPort;
-  final Duration timeout;
-  Future<RawDatagramSocket> _socket;
+  final InternetAddress? localAddress;
+  final int? localPort;
+  final Duration? timeout;
+  // Future<RawDatagramSocket> _socket;
 
   final LinkedList<_DnsResponseWaiter> _responseWaiters =
       LinkedList<_DnsResponseWaiter>();
 
   UdpDnsClient(
-      {@required this.remoteAddress,
+      {required this.remoteAddress,
       this.remotePort = 53,
       this.localAddress,
       this.localPort,
@@ -97,16 +96,16 @@ class UdpDnsClient extends PacketBasedDnsClient {
   }
 
   Future<RawDatagramSocket> _getSocket() async {
-    if (_socket != null) {
-      return _socket;
-    }
+    // if (_socket != null) {
+    //   return _socket;
+    // }
     final localAddress = this.localAddress;
     final localPort = this.localPort;
     final socket = await _bindSocket(
       localAddress,
       localPort,
     );
-    socket.listen((event) {
+    socket!.listen((event) {
       if (event == RawSocketEvent.read) {
         // Read UDP packet
         final datagram = socket.receive();
@@ -143,8 +142,8 @@ class UdpDnsClient extends PacketBasedDnsClient {
   }
 
   /// Binds socket. If port is null, attempts 3 random ports before giving up.
-  static Future<RawDatagramSocket> _bindSocket(
-      InternetAddress address, int port) async {
+  static Future<RawDatagramSocket?> _bindSocket(
+      InternetAddress? address, int? port) async {
     address ??= InternetAddress.anyIPv4;
     for (var n = 3; n > 0; n--) {
       try {
@@ -168,7 +167,7 @@ class UdpDnsClient extends PacketBasedDnsClient {
 class _DnsResponseWaiter extends LinkedListEntry<_DnsResponseWaiter> {
   final String host;
   final Completer<DnsPacket> completer = Completer<DnsPacket>();
-  Timer timer;
+  late final Timer timer;
   final List<IpAddress> result = <IpAddress>[];
 
   _DnsResponseWaiter(this.host);

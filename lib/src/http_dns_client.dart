@@ -13,15 +13,15 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert' as convert;
 
 import 'package:ip/ip.dart';
 import 'package:meta/meta.dart';
+import 'package:universal_io/io.dart';
 
 import 'dns_client.dart';
 import 'dns_packet.dart';
 import 'udp_dns_client.dart';
-import 'package:universal_io/io.dart';
-import 'dart:convert' as convert;
 
 /// DNS client that uses DNS-over-HTTPS protocol supported by Google and
 /// Cloudflare.
@@ -37,13 +37,13 @@ class HttpDnsClient extends PacketBasedDnsClient {
   final String _urlHost;
 
   /// Resolves host of the the URL.
-  final DnsClient urlClient;
+  final DnsClient? urlClient;
 
   /// Whether to hide client IP address from the authoritative server.
   final bool maximalPrivacy;
 
   /// Default timeout for operations.
-  final Duration timeout;
+  final Duration? timeout;
 
   /// Constructs a DNS-over-HTTPS client.
   ///
@@ -72,9 +72,9 @@ class HttpDnsClient extends PacketBasedDnsClient {
   ///
   /// See [documentation at developers.google.com](https://developers.google.com/speed/public-dns/docs/dns-over-https).
   HttpDnsClient.google({
-    Duration timeout,
+    Duration? timeout,
     maximalPrivacy = false,
-    DnsClient urlClient,
+    DnsClient? urlClient,
   }) : this(
           "https://dns.google.com/resolve",
           timeout: timeout,
@@ -118,7 +118,7 @@ class HttpDnsClient extends PacketBasedDnsClient {
             "HTTP response was ${response.statusCode} (${response.reasonPhrase}). URL was: $url");
       }
       final contentType = response.headers.contentType;
-      switch (contentType.mimeType) {
+      switch (contentType?.mimeType) {
         case "application/json":
           break;
         case "application/x-javascript": // <-- Google's server returns this?
@@ -129,7 +129,7 @@ class HttpDnsClient extends PacketBasedDnsClient {
       }
     } catch (e) {
       // ignore: unawaited_futures
-      response.listen((_){}).cancel();
+      response.listen((_) {}).cancel();
       rethrow;
     }
 

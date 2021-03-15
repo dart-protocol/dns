@@ -48,7 +48,7 @@ abstract class DnsClient {
     return result;
   }
 
-  Future<DnsPacket> handlePacket(DnsPacket packet, {Duration timeout}) async {
+  Future<DnsPacket?> handlePacket(DnsPacket packet, {Duration? timeout}) async {
     if (packet.questions.isEmpty) {
       return null;
     }
@@ -147,7 +147,7 @@ class DelegatingDnsClient implements DnsClient {
   }
 
   @override
-  Future<DnsPacket> handlePacket(DnsPacket packet, {Duration timeout}) {
+  Future<DnsPacket?> handlePacket(DnsPacket packet, {Duration? timeout}) {
     return client.handlePacket(packet, timeout: timeout);
   }
 
